@@ -3,9 +3,11 @@ class Note {
   String? title;
   String? subtitle;
   dynamic date;
-  String? priority;
+  //String? priority;
 
-  Note({this.id, this.title, this.subtitle, this.date, this.priority});
+  Note({this.id, this.title, this.subtitle, this.date,
+    //this.priority
+  });
 
   Note.fromMap(Map<String, dynamic> json) {
     id = json['id'];

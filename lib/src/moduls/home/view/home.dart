@@ -1,6 +1,6 @@
-import 'dart:js_interop';
+// import 'dart:js_interop';
 import 'dart:math';
-import 'package:flutter/gestures.dart';
+// import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/src/data/constants/colors.dart';
@@ -137,11 +137,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: ListTile(
                                 title: InkWell(
                                   onTap: () {
+                                    Note note = data[index];
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const EditScreen()));
+                                            builder: (context) => EditScreen(
+                                                  note: note,
+                                                )));
                                   },
                                   child: RichText(
                                       maxLines: 3,
@@ -180,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     if (result != null && result) {
                                       deleteNote(index);
                                     }
+
                                     setState(() {
                                       dbHelper.delete(data[index].id);
                                       debugPrint(data.length.toString());
