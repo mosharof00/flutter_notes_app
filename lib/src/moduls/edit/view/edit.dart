@@ -56,7 +56,7 @@ class _EditScreenState extends State<EditScreen> {
                         hintText: 'Title',
                         hintStyle: TextStyle(fontSize: 25, color: Colors.grey))),
                 Text(
-                  DateFormat.yMMMMEEEEd().format(DateTime.now()).toString(),
+               ' ${DateFormat.yMEd().add_jms().format(DateTime.now())}',
                   style: const TextStyle(
                       fontStyle: FontStyle.italic, color: Colors.grey),
                 ),
