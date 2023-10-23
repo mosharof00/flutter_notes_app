@@ -16,12 +16,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   List<Note> data = [];
   List filteredData = [];
   DBHelper dbHelper = DBHelper();
 
-  Color getRandomColor(){
+  Color getRandomColor() {
     Random random = Random();
     return backgroundColors[random.nextInt(backgroundColors.length)];
   }
@@ -33,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void getData()async {
+  void getData() async {
     data = await dbHelper.getCartData();
     // filteredData = data ;
     print(data.length);
@@ -52,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
   //     filteredData = data
   //         .where((text) => text.title!.toLowerCase().contains(value.toLowerCase())).toList();
   //   });}
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,91 +108,97 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
                 child: FutureBuilder(
-                  future: dbHelper.getCartData(),
-                  builder: (context, snapshot) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.only(top: 30),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          //color: getRandomColor(),
-                          margin: const EdgeInsets.only(bottom: 20),
-                          elevation: 3,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: ListTile(
-                              title: InkWell(
-                                onTap: () {
-                                  Note note = data[index];
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    EditScreen(
-                                                      note: note,
-                                                    )
-                                            )
-                                        );
-                                },
-                                child: RichText(
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    text: TextSpan(
-                                        text: "${data[index].title}\n",
-                                        style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.8),
-                                        children: [
-                                          TextSpan(
-                                              text: data[index].subtitle,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.normal,
-                                                  height: 1.5
-                                              )
-                                          )
-                                        ]
-                                    )),
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(
-                                  'Edited: ${DateFormat.yMEd().add_jms().format(DateTime.parse(data[index].date))}',
-                                  style: const TextStyle(
-                                      fontSize: 11,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.grey
+                    future: dbHelper.getCartData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return ListView.builder(
+                            padding: const EdgeInsets.only(top: 30),
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              if (data.isEmpty) {
+                                return const Center(
+                                  child: Text('No Notes added', style: TextStyle(
+                                    fontSize: 30, color: Colors.white
+                                  ),),
+                                );
+                              } else {
+                                return Card(
+                                  //color: getRandomColor(),
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: ListTile(
+                                      title: InkWell(
+                                        onTap: () {
+                                          Note note = data[index];
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditScreen(
+                                                        note: note,
+                                                      )));
+                                        },
+                                        child: RichText(
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            text: TextSpan(
+                                                text: "${data[index].title}\n",
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    height: 1.8),
+                                                children: [
+                                                  TextSpan(
+                                                      text:
+                                                          data[index].subtitle,
+                                                      style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          height: 1.5))
+                                                ])),
+                                      ),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          'Edited: ${DateFormat.yMEd().add_jms().format(DateTime.parse(data[index].date))}',
+                                          style: const TextStyle(
+                                              fontSize: 11,
+                                              fontStyle: FontStyle.italic,
+                                              color: Colors.grey),
+                                        ),
+                                      ),
+                                      trailing: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            dbHelper.delete(data[index].id);
+                                            debugPrint(data.length.toString());
+                                          });
+                                        },
+                                        icon: const Icon(Icons.delete),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              trailing: IconButton(
-                                onPressed: ()  {
-                                  setState((){
-                                      dbHelper.delete(data[index].id);
-                                    debugPrint(data.length.toString());
-                                  });
-                                },
-                                icon: const Icon(Icons.delete),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-
-                  }
-                )),
+                                );
+                              }
+                            });
+                      }
+                    })),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddTaskScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddTaskScreen()));
         },
         elevation: 10,
         backgroundColor: Colors.grey.shade800,
