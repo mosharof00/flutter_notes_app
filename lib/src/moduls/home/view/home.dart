@@ -127,8 +127,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: ListTile(
                               title: InkWell(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) => EditScreen()));
+                                  Note note = data[index];
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditScreen(
+                                                      note: note,
+                                                    )
+                                            )
+                                        );
                                 },
                                 child: RichText(
                                     maxLines: 3,
@@ -186,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>AddTaskScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> const AddTaskScreen()));
         },
         elevation: 10,
         backgroundColor: Colors.grey.shade800,
