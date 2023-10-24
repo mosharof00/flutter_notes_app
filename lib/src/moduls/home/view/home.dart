@@ -5,8 +5,11 @@ import 'package:notes/src/data/constants/colors.dart';
 import 'package:notes/src/data/utils/database_helper.dart';
 import 'package:notes/src/moduls/add/view/add_task_screen.dart';
 import 'package:notes/src/moduls/edit/view/edit.dart';
-
+import 'package:notes/src/moduls/home/local_widget/header_part.dart';
+import 'package:notes/src/moduls/home/local_widget/note_design.dart';
+import 'package:notes/src/moduls/home/local_widget/seach_bar.dart';
 import '../../../data/models/note_model.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Note> data = [];
   List filteredData = [];
   DBHelper dbHelper = DBHelper();
+  bool sorted = false;
 
   Color getRandomColor() {
     Random random = Random();
@@ -34,23 +38,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getData() async {
     data = await dbHelper.getCartData();
-    // filteredData = data ;
-    print(data.length);
+    filteredData = data ;
+    debugPrint(filteredData.length.toString());
   }
 
-  // void onSearch(String searchText){
-  //   setState(() {
-  //     filteredData = data.where((note) => note.subtitle!.toLowerCase().contains(
-  //         searchText.toLowerCase()) || note.title!.toLowerCase().contains(
-  //         searchText.toLowerCase())).toList();
-  //   });
-  // }
+  void onSearch(String searchText){
+    setState(() {
+      filteredData = data.where((note) => note.subtitle!.toLowerCase().contains(
+          searchText.toLowerCase()) || note.title!.toLowerCase().contains(
+          searchText.toLowerCase())).toList();
+    });
+  }
 
-  // void filterList(value) {
-  //   setState(() {
-  //     filteredData = data
-  //         .where((text) => text.title!.toLowerCase().contains(value.toLowerCase())).toList();
-  //   });}
+
+  void deleteNote(int index) {
+    setState(() {
+      dbHelper.delete(filteredData[index].id);
+      filteredData.removeAt(index);
+      debugPrint(data.length.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,133 +67,53 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Note",
-                  style: TextStyle(fontSize: 30, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  padding: const EdgeInsets.all(0),
-                  icon: Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade800.withOpacity(.8),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: const Icon(
-                      Icons.sort,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+           const HeaderPart(),
             const SizedBox(
               height: 20,
             ),
-            TextField(
-              // onChanged: (value){
-              //   filterList(value);
-              // },
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                  hintText: "Search notes ",
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  fillColor: Colors.grey.shade800,
-                  filled: true,
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(color: Colors.transparent)),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(color: Colors.transparent))),
-            ),
+            SearchBarPart(
+                onChanged: (value){
+                  onSearch(value);
+                }),
             Expanded(
                 child: FutureBuilder(
                     future: dbHelper.getCartData(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const Center(child:CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 5,
+                        ) ,);
                       } else {
                         return ListView.builder(
                             padding: const EdgeInsets.only(top: 30),
-                            itemCount: data.length,
+                            itemCount: filteredData.length,
                             itemBuilder: (context, index) {
-                              if (data.isEmpty) {
-                                return const Center(
-                                  child: Text('No Notes added', style: TextStyle(
-                                    fontSize: 30, color: Colors.white
-                                  ),),
-                                );
-                              } else {
-                                return Card(
-                                  //color: getRandomColor(),
-                                  margin: const EdgeInsets.only(bottom: 20),
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: ListTile(
-                                      title: InkWell(
-                                        onTap: () {
-                                          Note note = data[index];
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      EditScreen(
-                                                        note: note,
-                                                      )));
-                                        },
-                                        child: RichText(
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            text: TextSpan(
-                                                text: "${data[index].title}\n",
-                                                style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                    height: 1.8),
-                                                children: [
-                                                  TextSpan(
-                                                      text:
-                                                          data[index].subtitle,
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                          height: 1.5))
-                                                ])),
-                                      ),
-                                      subtitle: Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: Text(
-                                          'Edited: ${DateFormat.yMEd().add_jms().format(DateTime.parse(data[index].date))}',
-                                          style: const TextStyle(
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      trailing: IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            dbHelper.delete(data[index].id);
-                                            debugPrint(data.length.toString());
-                                          });
-                                        },
-                                        icon: const Icon(Icons.delete),
-                                      ),
-                                    ),
-                                  ),
+                              if (filteredData.isEmpty) {
+                                return Container(
+                                  height: 100,
+                                    width: 100,
+                                    color: Colors.white,
+                                    child: const Text('no data here', style: TextStyle(color: Colors.white),));
+                              }else {
+                                return NoteDesign(
+                                    cardColor: getRandomColor(),
+                                    cardOnTap: (){
+                                      Note note = data[index];
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditScreen(
+                                                    note: note,
+                                                  )));
+                                    },
+                                    title: filteredData[index].title.toString(),
+                                    subTitle: filteredData[index].subtitle.toString(),
+                                    deleteWork: (){
+                                      deleteNote(index);
+                                    },
+                                    dateAbdTime: filteredData[index].date
                                 );
                               }
                             });
@@ -208,5 +135,56 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<dynamic> confirmDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey.shade900,
+            icon: const Icon(
+              Icons.info,
+              color: Colors.grey,
+            ),
+            title: const Text(
+              "Are you sure you want to delete?",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: const SizedBox(
+                      width: 60,
+                      child: Text(
+                        "Yes",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const SizedBox(
+                      width: 60,
+                      child: Text(
+                        "no",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      )),
+                )
+              ],
+            ),
+          );
+        });
   }
 }
