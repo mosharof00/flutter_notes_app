@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:notes/src/data/constants/colors.dart';
+import 'package:notes/src/data/global_widget/floating_button.dart';
 import 'package:notes/src/data/utils/database_helper.dart';
 import 'package:notes/src/moduls/add/view/add_task_screen.dart';
 import 'package:notes/src/moduls/edit/view/edit.dart';
@@ -63,13 +64,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-  void deleteNote(int index) {
+  deleteNote(int index) {
     setState(() {
       dbHelper.delete(filteredData[index].id);
       filteredData.removeAt(index);
       debugPrint(data.length.toString());
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       title: filteredData[index].title.toString(),
                                       subTitle: filteredData[index].subtitle.toString(),
                                       deleteWork: (){
-                                        deleteNote(index);
+                                        confirmDialog(context, index);
                                       },
                                       dateAbdTime: filteredData[index].date
                                   );
@@ -140,22 +142,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingButtonWork(
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const AddTaskScreen()));
         },
-        elevation: 10,
-        backgroundColor: Colors.grey.shade800,
-        child: const Icon(
+        label: 'Add',
+        icon: const Icon(
           Icons.add,
-          size: 38,
         ),
       ),
     );
   }
 
-  Future<dynamic> confirmDialog(BuildContext context) {
+  Future<dynamic> confirmDialog(context, int index) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -174,7 +174,8 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: (){
+                    deleteNote(index);
                     Navigator.pop(context);
                   },
                   style:

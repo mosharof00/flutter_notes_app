@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes/src/data/global_widget/floating_button.dart';
 import '../../../data/models/note_model.dart';
 import '../../../data/utils/database_helper.dart';
 import '../../home/view/home.dart';
@@ -78,7 +79,7 @@ class _EditScreenState extends State<EditScreen> {
               ]),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingButtonWork(
         onPressed: () {
           debugPrint(titleTextEditingController.text);
           dbHelper.updatedQuentity(Note(
@@ -96,7 +97,7 @@ class _EditScreenState extends State<EditScreen> {
             debugPrint("failed")
           });
         },
-        label: const Text('Update'),
+        label: 'Update',
         icon: const Icon(Icons.update),
       ),
     );

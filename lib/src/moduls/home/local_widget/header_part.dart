@@ -22,10 +22,7 @@ class HeaderPart extends StatelessWidget {
             decoration: BoxDecoration(
                 color: Colors.grey.shade800.withOpacity(.8),
                 borderRadius: BorderRadius.circular(10)),
-            child: const Icon(
-              Icons.sort,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.sort, color: Colors.white,)
           ),
         ),
       ],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+
 class FloatingButtonWork extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
-  final Icon icon;
+  final dynamic icon;
   const FloatingButtonWork({
     super.key,
     required this.onPressed,
@@ -17,6 +18,8 @@ class FloatingButtonWork extends StatelessWidget {
       onPressed: onPressed,
       label: Text(label),
       icon: icon,
+      elevation: 10,
+      backgroundColor: Colors.grey.shade800,
     );
   }
 }

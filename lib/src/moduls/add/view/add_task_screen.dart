@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes/src/data/global_widget/floating_button.dart';
 
 import '../../../data/models/note_model.dart';
 import '../../../data/utils/database_helper.dart';
@@ -67,7 +68,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ]),
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
+        floatingActionButton: FloatingButtonWork(
             onPressed: () {
               dbHelper
                   .insertData(Note(
@@ -83,7 +84,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                       (route) => false);
             },
-            label: const Text('Save'),
-            icon: const Icon(Icons.save)));
+            label: 'Save',
+            icon: const Icon(Icons.save_as_outlined,)));
   }
 }
