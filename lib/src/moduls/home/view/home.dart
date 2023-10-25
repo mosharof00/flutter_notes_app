@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:notes/src/data/constants/colors.dart';
 import 'package:notes/src/data/utils/database_helper.dart';
 import 'package:notes/src/moduls/add/view/add_task_screen.dart';
@@ -20,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Note> data = [];
-  List filteredData = [];
+  List <Note>filteredData = [];
   DBHelper dbHelper = DBHelper();
   bool sorted = false;
 
@@ -40,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     data = await dbHelper.getCartData();
     filteredData = data ;
     debugPrint(filteredData.length.toString());
+    filteredData = sortedByModifiedTIme(filteredData);
   }
 
   void onSearch(String searchText){
@@ -48,6 +48,18 @@ class _HomeScreenState extends State<HomeScreen> {
           searchText.toLowerCase()) || note.title!.toLowerCase().contains(
           searchText.toLowerCase())).toList();
     });
+  }
+
+  List<Note> sortedByModifiedTIme(List<Note> notes){
+    setState(() {
+      if(sorted){
+        notes.sort((a, b) => a.date.compareTo(b.date));
+      }else{
+        notes.sort((a, b)=> b.date.compareTo(a.date));
+      }
+      sorted = !sorted;
+    });
+    return notes;
   }
 
 
@@ -63,63 +75,69 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
-        child: Column(
-          children: [
-           const HeaderPart(),
-            const SizedBox(
-              height: 20,
-            ),
-            SearchBarPart(
-                onChanged: (value){
-                  onSearch(value);
-                }),
-            Expanded(
-                child: FutureBuilder(
-                    future: dbHelper.getCartData(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child:CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 5,
-                        ) ,);
-                      } else {
-                        return ListView.builder(
-                            padding: const EdgeInsets.only(top: 30),
-                            itemCount: filteredData.length,
-                            itemBuilder: (context, index) {
-                              if (filteredData.isEmpty) {
-                                return Container(
-                                  height: 100,
-                                    width: 100,
-                                    color: Colors.white,
-                                    child: const Text('no data here', style: TextStyle(color: Colors.white),));
-                              }else {
-                                return NoteDesign(
-                                    cardColor: getRandomColor(),
-                                    cardOnTap: (){
-                                      Note note = data[index];
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditScreen(
-                                                    note: note,
-                                                  )));
-                                    },
-                                    title: filteredData[index].title.toString(),
-                                    subTitle: filteredData[index].subtitle.toString(),
-                                    deleteWork: (){
-                                      deleteNote(index);
-                                    },
-                                    dateAbdTime: filteredData[index].date
-                                );
-                              }
-                            });
-                      }
-                    })),
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: Column(
+            children: [
+              HeaderPart(
+               sortIconTap: (){
+                 sortedByModifiedTIme(filteredData);
+               },
+             ),
+              const SizedBox(
+                height: 20,
+              ),
+              SearchBarPart(
+                  onChanged: (value){
+                    onSearch(value);
+                  }),
+              Expanded(
+                  child: FutureBuilder(
+                      future: dbHelper.getCartData(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child:CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 5,
+                          ) ,);
+                        } else {
+                          return ListView.builder(
+                              padding: const EdgeInsets.only(top: 30),
+                              itemCount: filteredData.length,
+                              itemBuilder: (context, index) {
+                                if (filteredData.isEmpty) {
+                                  return Container(
+                                    height: 100,
+                                      width: 100,
+                                      color: Colors.white,
+                                      child: const Text('no data here', style: TextStyle(color: Colors.white),));
+                                }else {
+                                  return NoteDesign(
+                                      cardColor: getRandomColor(),
+                                      cardOnTap: (){
+                                        Note note = data[index];
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditScreen(
+                                                      note: note,
+                                                    )));
+                                      },
+                                      title: filteredData[index].title.toString(),
+                                      subTitle: filteredData[index].subtitle.toString(),
+                                      deleteWork: (){
+                                        deleteNote(index);
+                                      },
+                                      dateAbdTime: filteredData[index].date
+                                  );
+                                }
+                              });
+                        }
+                      })),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

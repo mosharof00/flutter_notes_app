@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:notes/src/moduls/edit/view/edit.dart';
 
 class NoteDesign extends StatelessWidget {
   final Color cardColor;
@@ -34,7 +33,7 @@ class NoteDesign extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 text: TextSpan(
-                    text: "${title}\n",
+                    text: "$title\n",
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,

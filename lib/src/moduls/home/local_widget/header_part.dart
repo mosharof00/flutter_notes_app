@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HeaderPart extends StatelessWidget {
-  const HeaderPart({super.key});
+ final dynamic sortIconTap;
+  const HeaderPart({super.key, required this.sortIconTap});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class HeaderPart extends StatelessWidget {
           style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: sortIconTap,
           padding: const EdgeInsets.all(0),
           icon: Container(
             height: 40,
